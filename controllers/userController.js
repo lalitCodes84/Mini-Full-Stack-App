@@ -13,11 +13,9 @@ exports.createUser = async (req, res) => {
     // Check if the user already exists
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
-
       return res
         .status(400)
         .json({ message: "User already exists with this email." });
-
     }
 
     // Hash the password
@@ -47,7 +45,6 @@ exports.createUser = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
-
 
 // Get All Users
 exports.getAllUsers = async (req, res) => {

@@ -48,20 +48,34 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// Get all products
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await productModel.find();
 
+    if (!products || products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No products found",
+      });
+    }
+
+    // Safely map product fields
     const formattedProducts = products.map((product) => ({
-      ...product._doc,
-      images: product.images.map(
-        (img) => `data:${img.contentType};base64,${img.data.toString("base64")}`
-      ),
+      name: product.name || "Unknown",
+      price: product.price?.toString() || "0", // Convert to string safely
+      category: product.category || "No category",
+      stock: product.stock || 0,
+      images:
+        product.images?.map((image) => ({
+          path: image.path || "No path",
+          mimetype: image.mimetype || "Unknown",
+        })) || [],
+      createdBy: product.createdBy || "Anonymous",
     }));
 
     res.status(200).json({
       success: true,
+      message: "Products fetched successfully",
       products: formattedProducts,
     });
   } catch (error) {
